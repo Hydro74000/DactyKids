@@ -55,9 +55,15 @@ jobs:
       - run: flutter pub get
       - run: flutter build windows
       - name: Install NSIS
-        run: choco install nsis -y
+        run: choco install nsis -y --no-progress
       - name: Build NSIS installer
-        run: makensis windows/installer/dactykids.nsi
+        shell: pwsh
+        run: |
+          $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+          if (!(Test-Path $makensis)) {
+            $makensis = "${env:ProgramFiles}\NSIS\makensis.exe"
+          }
+          & $makensis windows/installer/dactykids.nsi
       - uses: actions/upload-artifact@v4
         with:
           name: dactykids-windows
