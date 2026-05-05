@@ -22,8 +22,8 @@ MAJOR.MINOR.PATCH+BUILD
 5. Creer un tag Git:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ## Donnees locales

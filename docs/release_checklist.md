@@ -35,8 +35,8 @@
 ## Packaging
 
 - Android release signe avec une vraie cle avant publication.
-- macOS signe et notarise avant diffusion publique.
-- Windows signe avant diffusion publique.
+- macOS signe et notarise avant diffusion publique large; artefact GitHub non signe acceptable pour test/distribution manuelle.
+- Windows signe avant diffusion publique large; installateur NSIS non signe acceptable pour test/distribution manuelle.
 - Artefacts CI recuperes et nommes avec version/date.
 - Tag Git cree selon `docs/versioning.md`.
 

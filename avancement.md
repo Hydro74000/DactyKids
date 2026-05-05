@@ -49,3 +49,5 @@
 - 2026-05-05: Keystore release Android cree hors Git et APK signee.
 - 2026-05-05: Build Windows documente natif; prerequis Windows ajoutes init.
 - 2026-05-05: CI Windows NSIS ajoutee + lancement macOS non signe documente.
+- 2026-05-05: README complet reorganise utilisateur puis technique.
+- 2026-05-05: Release v1.0.0 preparee: version, changelog, checklist.
