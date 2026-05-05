@@ -1,9 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../data/local_storage/local_backup_store.dart';
 import '../../data/local_storage/progress_store.dart';
 import '../../data/local_storage/settings_store.dart';
-import '../../data/local_storage/local_backup_store.dart';
 import '../../domain/keyboard/keyboard_layout.dart';
 import '../../domain/typing_engine/activity_definition.dart';
 import '../../domain/typing_engine/scoring_engine.dart';
@@ -61,7 +63,6 @@ class HomeScreen extends StatelessWidget {
             tooltip: 'Mini-jeux',
             onPressed: () => _showMiniGamesPanel(
               context,
-              selectedLessons,
               selectedLayout,
             ),
             icon: const Icon(Icons.sports_esports_rounded),
@@ -89,12 +90,10 @@ class HomeScreen extends StatelessWidget {
                 layoutLabel: selectedLayout.label,
                 visualPreset: settings.visualPreset,
                 progressOverview: progressOverview,
-                onEditProfile: () => _showProfilePanel(context),
                 onChooseAvatar: () => _showAvatarPanel(context),
                 onShowRewards: () => _showRewardsPanel(context),
                 onShowMiniGames: () => _showMiniGamesPanel(
                   context,
-                  selectedLessons,
                   selectedLayout,
                 ),
               ),
@@ -247,6 +246,13 @@ class HomeScreen extends StatelessWidget {
                       value: draft.showTimer,
                       onChanged: (value) => save(
                         draft.copyWith(showTimer: value),
+                      ),
+                    ),
+                    SwitchListTile(
+                      title: const Text('Aide mains et doigts'),
+                      value: draft.showHandGuide,
+                      onChanged: (value) => save(
+                        draft.copyWith(showHandGuide: value),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -479,7 +485,6 @@ class HomeScreen extends StatelessWidget {
 
   Future<void> _showMiniGamesPanel(
     BuildContext context,
-    List<ActivityDefinition> selectedLessons,
     KeyboardLayout selectedLayout,
   ) async {
     await showModalBottomSheet<void>(
@@ -500,7 +505,6 @@ class HomeScreen extends StatelessWidget {
                 isUnlocked: _isMiniGameUnlocked(LessonGameType.balloons),
                 onTap: () => _startMiniGame(
                   context,
-                  selectedLessons,
                   selectedLayout,
                   LessonGameType.balloons,
                 ),
@@ -514,7 +518,6 @@ class HomeScreen extends StatelessWidget {
                 isUnlocked: _isMiniGameUnlocked(LessonGameType.moles),
                 onTap: () => _startMiniGame(
                   context,
-                  selectedLessons,
                   selectedLayout,
                   LessonGameType.moles,
                 ),
@@ -528,7 +531,6 @@ class HomeScreen extends StatelessWidget {
                 isUnlocked: _isMiniGameUnlocked(LessonGameType.garden),
                 onTap: () => _startMiniGame(
                   context,
-                  selectedLessons,
                   selectedLayout,
                   LessonGameType.garden,
                 ),
@@ -542,7 +544,6 @@ class HomeScreen extends StatelessWidget {
                 isUnlocked: _isMiniGameUnlocked(LessonGameType.spaceship),
                 onTap: () => _startMiniGame(
                   context,
-                  selectedLessons,
                   selectedLayout,
                   LessonGameType.spaceship,
                 ),
@@ -556,7 +557,6 @@ class HomeScreen extends StatelessWidget {
                 isUnlocked: _isMiniGameUnlocked(LessonGameType.race),
                 onTap: () => _startMiniGame(
                   context,
-                  selectedLessons,
                   selectedLayout,
                   LessonGameType.race,
                 ),
@@ -584,11 +584,13 @@ class HomeScreen extends StatelessWidget {
 
   void _startMiniGame(
     BuildContext context,
-    List<ActivityDefinition> selectedLessons,
     KeyboardLayout selectedLayout,
     LessonGameType gameType,
   ) {
-    final lesson = _lessonForMiniGame(selectedLessons, gameType);
+    final lesson = _randomMiniGameActivity(
+      selectedLayout: selectedLayout,
+      gameType: gameType,
+    );
     Navigator.of(context).pop();
     _startLesson(
       context,
@@ -598,35 +600,89 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  ActivityDefinition _lessonForMiniGame(
-    List<ActivityDefinition> selectedLessons,
-    LessonGameType gameType,
-  ) {
-    final candidates = switch (gameType) {
-      LessonGameType.balloons => selectedLessons.where(
-          (lesson) => lesson.id.endsWith('01') || lesson.id.endsWith('02')),
-      LessonGameType.moles => selectedLessons.where(
-          (lesson) =>
-              lesson.world == 'village_home_row' &&
-              !lesson.id.endsWith('01') &&
-              !lesson.id.endsWith('02'),
+  ActivityDefinition _randomMiniGameActivity({
+    required KeyboardLayout selectedLayout,
+    required LessonGameType gameType,
+  }) {
+    final random = math.Random(DateTime.now().microsecondsSinceEpoch);
+    final letterKeys = _letterKeysFor(selectedLayout);
+    final digitKeys = _availableFrom(selectedLayout, _digitPool);
+    final symbolKeys = _availableFrom(selectedLayout, _symbolPool);
+    final wordPool = _wordPoolFor(selectedLayout);
+
+    final prompts = switch (gameType) {
+      LessonGameType.balloons => _pickMany(random, letterKeys, 12),
+      LessonGameType.moles => _pickMany(random, letterKeys, 14),
+      LessonGameType.garden => _pickMany(random, wordPool, 8),
+      LessonGameType.spaceship => _pickMany(
+          random,
+          [
+            ...letterKeys.take(12),
+            ...digitKeys,
+            ...symbolKeys,
+          ],
+          14,
         ),
-      LessonGameType.garden =>
-        selectedLessons.where((lesson) => lesson.world == 'forest_top_row'),
-      LessonGameType.spaceship =>
-        selectedLessons.where((lesson) => lesson.world == 'castle_phrases'),
-      LessonGameType.race => selectedLessons.where(
-          (lesson) =>
-              lesson.promptMode == PromptMode.words ||
-              lesson.promptMode == PromptMode.sentences ||
-              lesson.promptMode == PromptMode.paragraphs,
-        ),
+      LessonGameType.race => _pickMany(random, wordPool, 10),
     };
-    return candidates.firstWhere(
-      (lesson) => !progressOverview.completedLessons.contains(lesson.id),
-      orElse: () =>
-          candidates.isEmpty ? selectedLessons.first : candidates.first,
+
+    final promptMode = switch (gameType) {
+      LessonGameType.garden || LessonGameType.race => PromptMode.words,
+      _ => PromptMode.keys,
+    };
+
+    return ActivityDefinition(
+      id: 'mini_game_${gameType.name}_arcade',
+      title: _miniGameArcadeTitle(gameType),
+      world: 'mini_games_arcade',
+      newKeys: prompts
+          .where((prompt) => promptMode == PromptMode.keys)
+          .toSet()
+          .toList(),
+      reviewKeys: letterKeys.take(8).toList(),
+      requiredAccuracy: 0.9,
+      prompts: prompts,
+      promptMode: promptMode,
     );
+  }
+
+  List<String> _letterKeysFor(KeyboardLayout layout) {
+    final keys = layout.rows.expand((row) => row).where((key) {
+      return key.length == 1 && RegExp(r'^[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜ]$').hasMatch(key);
+    }).toList();
+    keys.shuffle(math.Random(DateTime.now().millisecondsSinceEpoch));
+    return keys.isEmpty ? const ['F', 'J', 'D', 'K'] : keys;
+  }
+
+  List<String> _availableFrom(KeyboardLayout layout, List<String> pool) {
+    return pool.where(layout.contains).toList();
+  }
+
+  List<String> _wordPoolFor(KeyboardLayout layout) {
+    return _wordPool.where((word) {
+      return word
+          .toUpperCase()
+          .split('')
+          .every((character) => layout.contains(character));
+    }).toList();
+  }
+
+  List<String> _pickMany(math.Random random, List<String> pool, int count) {
+    final choices = pool.isEmpty ? const ['F', 'J', 'D', 'K'] : pool;
+    return [
+      for (var index = 0; index < count; index++)
+        choices[random.nextInt(choices.length)],
+    ];
+  }
+
+  String _miniGameArcadeTitle(LessonGameType gameType) {
+    return switch (gameType) {
+      LessonGameType.balloons => 'Mini-jeu ballons',
+      LessonGameType.moles => 'Mini-jeu taupes',
+      LessonGameType.garden => 'Mini-jeu jardin',
+      LessonGameType.spaceship => 'Mini-jeu vaisseau',
+      LessonGameType.race => 'Mini-jeu course',
+    };
   }
 
   Future<void> _showParentPanel(
@@ -924,7 +980,6 @@ class _WelcomePanel extends StatelessWidget {
     required this.avatarId,
     required this.visualPreset,
     required this.progressOverview,
-    required this.onEditProfile,
     required this.onChooseAvatar,
     required this.onShowRewards,
     required this.onShowMiniGames,
@@ -935,7 +990,6 @@ class _WelcomePanel extends StatelessWidget {
   final String layoutLabel;
   final VisualPreset visualPreset;
   final ProgressOverview progressOverview;
-  final VoidCallback onEditProfile;
   final VoidCallback onChooseAvatar;
   final VoidCallback onShowRewards;
   final VoidCallback onShowMiniGames;
@@ -971,10 +1025,12 @@ class _WelcomePanel extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-              FilledButton.icon(
-                onPressed: onEditProfile,
-                icon: const Icon(Icons.person_rounded),
-                label: const Text('Profil'),
+              Chip(
+                avatar: const Icon(
+                  Icons.star_rounded,
+                  color: Color(0xffffc107),
+                ),
+                label: Text('${progressOverview.starWallet} etoile(s)'),
               ),
               OutlinedButton.icon(
                 onPressed: onChooseAvatar,
@@ -1041,13 +1097,12 @@ class _RewardShelf extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: [
-        for (final reward in _allRewards)
+        for (final reward
+            in _allRewards.where((reward) => rewardIds.contains(reward.id)))
           Chip(
             avatar: Icon(
               reward.icon,
-              color: rewardIds.contains(reward.id)
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).disabledColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
             label: Text(reward.label),
           ),
@@ -1094,6 +1149,43 @@ const _allRewards = [
       'Terminer la premiere lecon avec accents francais.'),
   _Reward('badge_paragraphe', Icons.notes_rounded, 'Paragraphe',
       'Terminer le premier paragraphe court.'),
+];
+
+const _digitPool = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+const _symbolPool = [',', ';', ':', '!', '.', '/'];
+
+const _wordPool = [
+  'ami',
+  'lit',
+  'moto',
+  'robot',
+  'soleil',
+  'lune',
+  'jardin',
+  'ballon',
+  'fusée',
+  'voiture',
+  'route',
+  'fleur',
+  'taupe',
+  'maison',
+  'chat',
+  'koala',
+  'piano',
+  'banane',
+  'tomate',
+  'nuage',
+  'pirate',
+  'cadeau',
+  'orange',
+  'village',
+  'magie',
+  'navire',
+  'radis',
+  'comete',
+  'ruban',
+  'cactus',
 ];
 
 class _WorldSummary {

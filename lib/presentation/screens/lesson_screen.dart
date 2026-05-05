@@ -9,6 +9,7 @@ import '../../domain/typing_engine/session_controller.dart';
 import '../audio/audio_feedback.dart';
 import '../widgets/balloon_game.dart';
 import '../widgets/garden_game.dart';
+import '../widgets/hand_guide.dart';
 import '../widgets/mole_game.dart';
 import '../widgets/race_game.dart';
 import '../widgets/spaceship_game.dart';
@@ -85,7 +86,8 @@ class _LessonScreenState extends State<LessonScreen> {
         await _audioFeedback.playSuccess();
       }
       final result = _controller.result();
-      await widget.progressStore.markLessonComplete(widget.profileId, result);
+      final starAward = await widget.progressStore
+          .markLessonComplete(widget.profileId, result);
       final progressOverview =
           await widget.progressStore.loadOverview(widget.profileId);
       if (!mounted) {
@@ -95,6 +97,7 @@ class _LessonScreenState extends State<LessonScreen> {
         MaterialPageRoute<void>(
           builder: (_) => ResultScreen(
             result: result,
+            starAward: starAward,
             rewardIds: progressOverview.rewardIds,
           ),
         ),
@@ -118,7 +121,11 @@ class _LessonScreenState extends State<LessonScreen> {
       onKeyEvent: _handleKey,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.lesson.title),
+          title: _LessonHeaderTitle(
+            lessonTitle: widget.lesson.title,
+            feedbackMessage: state.feedback.message,
+            isPositive: state.feedback.isPositive,
+          ),
           actions: [
             if (widget.settings.showTimer)
               Padding(
@@ -140,11 +147,10 @@ class _LessonScreenState extends State<LessonScreen> {
                 gameType: widget.forcedGameType ?? _gameTypeFor(widget.lesson),
                 prompt: state.currentPromptLabel,
                 displayPrompt: displayPrompt,
-                finger: finger,
-                feedbackMessage: state.feedback.message,
                 isPositive: state.feedback.isPositive,
-                assistLevel: state.assistLevel,
                 progress: state.progress,
+                errorCount: state.keyStats.values
+                    .fold<int>(0, (sum, stats) => sum + stats.errors),
                 feedbackPulse: _feedbackPulse,
                 reduceMotion: widget.settings.reduceMotion,
               );
@@ -154,6 +160,13 @@ class _LessonScreenState extends State<LessonScreen> {
                 useLargeTarget: isLowVision ||
                     !state.feedback.isPositive ||
                     state.assistLevel > 0,
+              );
+              final lessonAid = _LessonAidPanel(
+                finger: finger,
+                assistLevel: state.assistLevel,
+                showHandGuide: widget.settings.showHandGuide,
+                highContrast:
+                    widget.settings.visualPreset == VisualPreset.highContrast,
               );
 
               return Padding(
@@ -173,7 +186,16 @@ class _LessonScreenState extends State<LessonScreen> {
                               children: [
                                 Expanded(flex: 3, child: game),
                                 const SizedBox(width: 24),
-                                Expanded(flex: 2, child: keyboard),
+                                Expanded(
+                                  flex: 2,
+                                  child: ListView(
+                                    children: [
+                                      keyboard,
+                                      const SizedBox(height: 12),
+                                      lessonAid,
+                                    ],
+                                  ),
+                                ),
                               ],
                             )
                           : ListView(
@@ -181,6 +203,8 @@ class _LessonScreenState extends State<LessonScreen> {
                                 game,
                                 const SizedBox(height: 20),
                                 keyboard,
+                                const SizedBox(height: 12),
+                                lessonAid,
                               ],
                             ),
                     ),
@@ -237,6 +261,64 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 }
 
+class _LessonHeaderTitle extends StatelessWidget {
+  const _LessonHeaderTitle({
+    required this.lessonTitle,
+    required this.feedbackMessage,
+    required this.isPositive,
+  });
+
+  final String lessonTitle;
+  final String feedbackMessage;
+  final bool isPositive;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Flexible(
+          flex: 2,
+          child: Text(
+            lessonTitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 3,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color:
+                  isPositive ? scheme.primaryContainer : scheme.errorContainer,
+              border: Border.all(
+                color: isPositive ? scheme.primary : scheme.error,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              feedbackMessage,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: isPositive
+                        ? scheme.onPrimaryContainer
+                        : scheme.onErrorContainer,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ElapsedTimer extends StatelessWidget {
   const _ElapsedTimer({required this.startedAt});
 
@@ -266,11 +348,9 @@ class _LessonStage extends StatelessWidget {
     required this.gameType,
     required this.prompt,
     required this.displayPrompt,
-    required this.finger,
-    required this.feedbackMessage,
     required this.isPositive,
-    required this.assistLevel,
     required this.progress,
+    required this.errorCount,
     required this.feedbackPulse,
     required this.reduceMotion,
   });
@@ -278,45 +358,109 @@ class _LessonStage extends StatelessWidget {
   final LessonGameType gameType;
   final String prompt;
   final String displayPrompt;
-  final String finger;
-  final String feedbackMessage;
   final bool isPositive;
-  final int assistLevel;
   final double progress;
+  final int errorCount;
   final int feedbackPulse;
   final bool reduceMotion;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final promptLabel = displayPrompt == 'SPACE' ? 'espace' : displayPrompt;
     return Semantics(
       liveRegion: true,
-      label: 'Touche a taper $promptLabel. Utilise $finger.',
+      label: 'Touche a taper $promptLabel.',
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _GameView(
             gameType: gameType,
             prompt: prompt,
+            isPositive: isPositive,
+            progress: progress,
+            errorCount: errorCount,
             feedbackPulse: feedbackPulse,
             reduceMotion: reduceMotion,
           ),
           const SizedBox(height: 12),
-          Text(
-            promptLabel,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: prompt == 'SPACE' ? 54 : 88,
-                  fontWeight: FontWeight.w900,
-                ),
+          _PromptDisplay(
+            label: promptLabel,
+            isSpace: prompt == 'SPACE',
           ),
-          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+class _PromptDisplay extends StatelessWidget {
+  const _PromptDisplay({
+    required this.label,
+    required this.isSpace,
+  });
+
+  final String label;
+  final bool isSpace;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.displayLarge?.copyWith(
+          fontSize: isSpace ? 50 : 76,
+          height: 1.04,
+          fontWeight: FontWeight.w900,
+        );
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 220),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 660),
+          child: Text(
+            label,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: textStyle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LessonAidPanel extends StatelessWidget {
+  const _LessonAidPanel({
+    required this.finger,
+    required this.assistLevel,
+    required this.showHandGuide,
+    required this.highContrast,
+  });
+
+  final String finger;
+  final int assistLevel;
+  final bool showHandGuide;
+  final bool highContrast;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Aide doigt. Utilise $finger.',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showHandGuide) ...[
+            HandGuide(
+              finger: finger,
+              highContrast: highContrast,
+            ),
+            const SizedBox(height: 8),
+          ],
           Text(
             finger,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
                 ),
           ),
           if (assistLevel > 0) ...[
@@ -329,30 +473,6 @@ class _LessonStage extends StatelessWidget {
                   ),
             ),
           ],
-          const SizedBox(height: 18),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-            decoration: BoxDecoration(
-              color:
-                  isPositive ? scheme.primaryContainer : scheme.errorContainer,
-              border: Border.all(
-                color: isPositive ? scheme.primary : scheme.error,
-                width: 3,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              feedbackMessage,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isPositive
-                        ? scheme.onPrimaryContainer
-                        : scheme.onErrorContainer,
-                    fontWeight: FontWeight.w900,
-                  ),
-            ),
-          ),
         ],
       ),
     );
@@ -383,12 +503,18 @@ class _GameView extends StatelessWidget {
   const _GameView({
     required this.gameType,
     required this.prompt,
+    required this.isPositive,
+    required this.progress,
+    required this.errorCount,
     required this.feedbackPulse,
     required this.reduceMotion,
   });
 
   final LessonGameType gameType;
   final String prompt;
+  final bool isPositive;
+  final double progress;
+  final int errorCount;
   final int feedbackPulse;
   final bool reduceMotion;
 
@@ -397,26 +523,36 @@ class _GameView extends StatelessWidget {
     return switch (gameType) {
       LessonGameType.balloons => BalloonGame(
           prompt: prompt,
+          isPositive: isPositive,
           feedbackPulse: feedbackPulse,
           reduceMotion: reduceMotion,
         ),
       LessonGameType.moles => MoleGame(
           prompt: prompt,
+          isPositive: isPositive,
+          progress: progress,
           feedbackPulse: feedbackPulse,
           reduceMotion: reduceMotion,
         ),
       LessonGameType.garden => GardenGame(
           prompt: prompt,
+          isPositive: isPositive,
+          progress: progress,
           feedbackPulse: feedbackPulse,
           reduceMotion: reduceMotion,
         ),
       LessonGameType.spaceship => SpaceshipGame(
           prompt: prompt,
+          isPositive: isPositive,
+          progress: progress,
           feedbackPulse: feedbackPulse,
           reduceMotion: reduceMotion,
         ),
       LessonGameType.race => RaceGame(
           prompt: prompt,
+          isPositive: isPositive,
+          progress: progress,
+          errorCount: errorCount,
           feedbackPulse: feedbackPulse,
           reduceMotion: reduceMotion,
         ),

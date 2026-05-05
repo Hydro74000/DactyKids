@@ -54,10 +54,18 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build windows
+      - name: Install NSIS
+        run: choco install nsis -y
+      - name: Build NSIS installer
+        run: makensis windows/installer/dactykids.nsi
       - uses: actions/upload-artifact@v4
         with:
           name: dactykids-windows
           path: build/windows/x64/runner/Release/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dactykids-windows-installer
+          path: build/windows/dactykids-setup.exe
 
   build-macos:
     name: Build macOS

@@ -41,6 +41,7 @@ class AppSettings {
     required this.reduceMotion,
     required this.soundEnabled,
     required this.showTimer,
+    required this.showHandGuide,
     required this.weeklyGoalMinutes,
   });
 
@@ -52,6 +53,7 @@ class AppSettings {
   final bool reduceMotion;
   final bool soundEnabled;
   final bool showTimer;
+  final bool showHandGuide;
   final int weeklyGoalMinutes;
 
   AppSettings copyWith({
@@ -63,6 +65,7 @@ class AppSettings {
     bool? reduceMotion,
     bool? soundEnabled,
     bool? showTimer,
+    bool? showHandGuide,
     int? weeklyGoalMinutes,
   }) {
     return AppSettings(
@@ -74,6 +77,7 @@ class AppSettings {
       reduceMotion: reduceMotion ?? this.reduceMotion,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       showTimer: showTimer ?? this.showTimer,
+      showHandGuide: showHandGuide ?? this.showHandGuide,
       weeklyGoalMinutes: weeklyGoalMinutes ?? this.weeklyGoalMinutes,
     );
   }
@@ -87,6 +91,7 @@ class AppSettings {
     reduceMotion: false,
     soundEnabled: true,
     showTimer: false,
+    showHandGuide: true,
     weeklyGoalMinutes: 20,
   );
 }
@@ -101,6 +106,7 @@ class SettingsStore {
   static const _legacyReduceMotionKey = 'settings.reduceMotion';
   static const _legacySoundEnabledKey = 'settings.soundEnabled';
   static const _legacyShowTimerKey = 'settings.showTimer';
+  static const _legacyShowHandGuideKey = 'settings.showHandGuide';
   static const _legacyWeeklyGoalMinutesKey = 'settings.weeklyGoalMinutes';
 
   Future<AppSettings> load() async {
@@ -132,6 +138,8 @@ class SettingsStore {
         soundEnabled:
             prefs.getBool(_legacySoundEnabledKey) ?? migrated.soundEnabled,
         showTimer: prefs.getBool(_legacyShowTimerKey) ?? migrated.showTimer,
+        showHandGuide:
+            prefs.getBool(_legacyShowHandGuideKey) ?? migrated.showHandGuide,
         weeklyGoalMinutes: prefs.getInt(_legacyWeeklyGoalMinutesKey) ??
             migrated.weeklyGoalMinutes,
       );
@@ -227,6 +235,8 @@ class SettingsStore {
           AppSettings.defaults.soundEnabled,
       showTimer:
           prefs.getBool('${prefix}showTimer') ?? AppSettings.defaults.showTimer,
+      showHandGuide: prefs.getBool('${prefix}showHandGuide') ??
+          AppSettings.defaults.showHandGuide,
       weeklyGoalMinutes: prefs.getInt('${prefix}weeklyGoalMinutes') ??
           AppSettings.defaults.weeklyGoalMinutes,
     );
@@ -248,6 +258,7 @@ class SettingsStore {
     await prefs.setBool('${prefix}reduceMotion', settings.reduceMotion);
     await prefs.setBool('${prefix}soundEnabled', settings.soundEnabled);
     await prefs.setBool('${prefix}showTimer', settings.showTimer);
+    await prefs.setBool('${prefix}showHandGuide', settings.showHandGuide);
     await prefs.setInt(
         '${prefix}weeklyGoalMinutes', settings.weeklyGoalMinutes);
   }

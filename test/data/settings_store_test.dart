@@ -20,6 +20,7 @@ void main() {
         keyboardLayoutId: 'qwerty_us',
         soundEnabled: false,
         showTimer: true,
+        showHandGuide: false,
         weeklyGoalMinutes: 35,
       ),
     );
@@ -31,6 +32,7 @@ void main() {
     expect(withCreated.activeProfile.settings.keyboardLayoutId, 'qwerty_us');
     expect(withCreated.activeProfile.settings.soundEnabled, isFalse);
     expect(withCreated.activeProfile.settings.showTimer, isTrue);
+    expect(withCreated.activeProfile.settings.showHandGuide, isFalse);
     expect(withCreated.activeProfile.settings.weeklyGoalMinutes, 35);
 
     await store.setActiveProfile(AppSettings.defaults.profileId);

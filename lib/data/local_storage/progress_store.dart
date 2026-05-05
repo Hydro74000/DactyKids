@@ -6,14 +6,18 @@ class ProgressOverview {
   const ProgressOverview({
     required this.completedLessons,
     required this.bestAccuracyByLesson,
+    required this.bestStarValueByLesson,
     required this.lastResultByLesson,
     required this.keyStats,
+    required this.starWallet,
   });
 
   final Set<String> completedLessons;
   final Map<String, int> bestAccuracyByLesson;
+  final Map<String, int> bestStarValueByLesson;
   final Map<String, LessonResultSnapshot> lastResultByLesson;
   final Map<String, KeyStats> keyStats;
+  final int starWallet;
 
   int get completedCount => completedLessons.length;
 
@@ -58,6 +62,27 @@ class ProgressOverview {
       });
     return stats.take(5).toList();
   }
+}
+
+class StarAward {
+  const StarAward({
+    required this.baseStars,
+    required this.isPerfectBonus,
+    required this.previousBestValue,
+    required this.newBestValue,
+    required this.walletGain,
+    required this.walletTotal,
+  });
+
+  final int baseStars;
+  final bool isPerfectBonus;
+  final int previousBestValue;
+  final int newBestValue;
+  final int walletGain;
+  final int walletTotal;
+
+  int get displayedStars => isPerfectBonus ? 4 : baseStars;
+  int get paidValue => isPerfectBonus ? baseStars * 2 : baseStars;
 }
 
 class LessonResultSnapshot {
@@ -140,8 +165,10 @@ class LessonResultSnapshot {
 class ProgressStore {
   static const _completedLessonsSuffix = 'progress.completedLessons';
   static const _bestAccuracySuffix = 'progress.bestAccuracy.';
+  static const _bestStarValueSuffix = 'progress.bestStarValue.';
   static const _lastResultSuffix = 'progress.lastResult.';
   static const _keyStatsSuffix = 'progress.keyStats.';
+  static const _starWalletSuffix = 'progress.starWallet';
 
   Future<Set<String>> loadCompletedLessons(String profileId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -155,9 +182,11 @@ class ProgressStore {
         (prefs.getStringList(_completedLessonsKey(profileId)) ?? const [])
             .toSet();
     final bestAccuracyByLesson = <String, int>{};
+    final bestStarValueByLesson = <String, int>{};
     final lastResultByLesson = <String, LessonResultSnapshot>{};
     final keyStats = <String, KeyStats>{};
     final bestAccuracyPrefix = _bestAccuracyPrefix(profileId);
+    final bestStarValuePrefix = _bestStarValuePrefix(profileId);
     final lastResultPrefix = _lastResultPrefix(profileId);
     final keyStatsPrefix = _keyStatsPrefix(profileId);
 
@@ -165,6 +194,10 @@ class ProgressStore {
       if (key.startsWith(bestAccuracyPrefix)) {
         final lessonId = key.substring(bestAccuracyPrefix.length);
         bestAccuracyByLesson[lessonId] = prefs.getInt(key) ?? 0;
+      }
+      if (key.startsWith(bestStarValuePrefix)) {
+        final lessonId = key.substring(bestStarValuePrefix.length);
+        bestStarValueByLesson[lessonId] = prefs.getInt(key) ?? 0;
       }
       if (key.startsWith(lastResultPrefix)) {
         final lessonId = key.substring(lastResultPrefix.length);
@@ -187,15 +220,24 @@ class ProgressStore {
     return ProgressOverview(
       completedLessons: completed,
       bestAccuracyByLesson: bestAccuracyByLesson,
+      bestStarValueByLesson: bestStarValueByLesson,
       lastResultByLesson: lastResultByLesson,
       keyStats: keyStats,
+      starWallet: prefs.getInt(_starWalletKey(profileId)) ?? 0,
     );
   }
 
-  Future<void> markLessonComplete(
+  Future<StarAward> markLessonComplete(
       String profileId, SessionResult result) async {
     final prefs = await SharedPreferences.getInstance();
     final accuracyPercent = (result.accuracy * 100).round();
+    final starAward = await _updateStars(
+      prefs: prefs,
+      profileId: profileId,
+      activityId: result.activityId,
+      accuracyPercent: accuracyPercent,
+      errors: result.errors,
+    );
     final bestKey = '${_bestAccuracyPrefix(profileId)}${result.activityId}';
     final previousBest = prefs.getInt(bestKey) ?? 0;
     if (accuracyPercent > previousBest) {
@@ -221,7 +263,7 @@ class ProgressStore {
       await prefs.setString(statsKey, merged.encode());
     }
     if (result.accuracy < 0.9) {
-      return;
+      return starAward;
     }
     final completed =
         (prefs.getStringList(_completedLessonsKey(profileId)) ?? const [])
@@ -231,6 +273,51 @@ class ProgressStore {
       _completedLessonsKey(profileId),
       completed.toList()..sort(),
     );
+    return starAward;
+  }
+
+  Future<StarAward> _updateStars({
+    required SharedPreferences prefs,
+    required String profileId,
+    required String activityId,
+    required int accuracyPercent,
+    required int errors,
+  }) async {
+    final baseStars = _baseStarsForAccuracy(accuracyPercent);
+    final isPerfectBonus = accuracyPercent == 100 && errors == 0;
+    final newValue = isPerfectBonus ? baseStars * 2 : baseStars;
+    final bestKey = '${_bestStarValuePrefix(profileId)}$activityId';
+    final previousBestValue = prefs.getInt(bestKey) ?? 0;
+    final walletKey = _starWalletKey(profileId);
+    final previousWallet = prefs.getInt(walletKey) ?? 0;
+    final gain = (newValue - previousBestValue).clamp(0, 999);
+    final nextWallet = previousWallet + gain;
+
+    if (newValue > previousBestValue) {
+      await prefs.setInt(bestKey, newValue);
+    }
+    if (gain > 0) {
+      await prefs.setInt(walletKey, nextWallet);
+    }
+
+    return StarAward(
+      baseStars: baseStars,
+      isPerfectBonus: isPerfectBonus,
+      previousBestValue: previousBestValue,
+      newBestValue: newValue > previousBestValue ? newValue : previousBestValue,
+      walletGain: gain,
+      walletTotal: nextWallet,
+    );
+  }
+
+  int _baseStarsForAccuracy(int accuracyPercent) {
+    if (accuracyPercent <= 33) {
+      return 1;
+    }
+    if (accuracyPercent <= 66) {
+      return 2;
+    }
+    return 3;
   }
 
   Future<void> clearProfile(String profileId) async {
@@ -249,9 +336,15 @@ class ProgressStore {
   String _bestAccuracyPrefix(String profileId) =>
       '${_profilePrefix(profileId)}$_bestAccuracySuffix';
 
+  String _bestStarValuePrefix(String profileId) =>
+      '${_profilePrefix(profileId)}$_bestStarValueSuffix';
+
   String _lastResultPrefix(String profileId) =>
       '${_profilePrefix(profileId)}$_lastResultSuffix';
 
   String _keyStatsPrefix(String profileId) =>
       '${_profilePrefix(profileId)}$_keyStatsSuffix';
+
+  String _starWalletKey(String profileId) =>
+      '${_profilePrefix(profileId)}$_starWalletSuffix';
 }

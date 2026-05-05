@@ -10,7 +10,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = ProgressStore();
 
-    await store.markLessonComplete(
+    final award = await store.markLessonComplete(
       'profile_a',
       const SessionResult(
         activityId: 'home_row_01',
@@ -39,9 +39,57 @@ void main() {
     expect(overview.keyStats['F']?.attempts, 5);
     expect(overview.recordedPracticeSeconds, 60);
     expect(overview.rewardIds, containsAll(['sticker_fj', 'etoile_precision']));
+    expect(award.baseStars, 3);
+    expect(award.isPerfectBonus, isTrue);
+    expect(award.walletGain, 6);
+    expect(overview.starWallet, 6);
+    expect(overview.bestStarValueByLesson['home_row_01'], 6);
     expect(otherOverview.completedLessons, isEmpty);
     expect(otherOverview.bestAccuracyByLesson, isEmpty);
+    expect(otherOverview.starWallet, 0);
     expect(otherOverview.keyStats, isEmpty);
+  });
+
+  test('adds only extra stars when a lesson score improves', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = ProgressStore();
+
+    final firstAward = await store.markLessonComplete(
+      'profile_a',
+      _result(
+        activityId: 'home_row_03',
+        total: 10,
+        correct: 5,
+        errors: 5,
+      ),
+    );
+    final betterAward = await store.markLessonComplete(
+      'profile_a',
+      _result(
+        activityId: 'home_row_03',
+        total: 10,
+        correct: 8,
+        errors: 2,
+      ),
+    );
+    final perfectAward = await store.markLessonComplete(
+      'profile_a',
+      _perfectResult('home_row_03'),
+    );
+    final replayAward = await store.markLessonComplete(
+      'profile_a',
+      _perfectResult('home_row_03'),
+    );
+
+    final overview = await store.loadOverview('profile_a');
+
+    expect(firstAward.walletGain, 2);
+    expect(betterAward.walletGain, 1);
+    expect(perfectAward.walletGain, 3);
+    expect(perfectAward.isPerfectBonus, isTrue);
+    expect(replayAward.walletGain, 0);
+    expect(overview.starWallet, 6);
+    expect(overview.bestStarValueByLesson['home_row_03'], 6);
   });
 
   test('clears all progress for one profile only', () async {
@@ -58,6 +106,33 @@ void main() {
     expect((await store.loadOverview('profile_b')).completedLessons,
         contains('home_row_02'));
   });
+}
+
+SessionResult _result({
+  required String activityId,
+  required int total,
+  required int correct,
+  required int errors,
+}) {
+  return SessionResult(
+    activityId: activityId,
+    totalKeystrokes: total,
+    correctKeystrokes: correct,
+    errors: errors,
+    accuracy: correct / total,
+    keyStats: {
+      'F': KeyStats(
+        keyId: 'F',
+        attempts: total,
+        correct: correct,
+        errors: errors,
+      ),
+    },
+    duration: const Duration(seconds: 30),
+    wpm: 1.6,
+    difficultKeys: const [],
+    masteredKeys: const [],
+  );
 }
 
 SessionResult _perfectResult(String activityId) {

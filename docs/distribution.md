@@ -27,18 +27,37 @@ build/linux/x64/release/bundle/dactykids
 ## Windows
 
 Ce build doit etre lance sur Windows avec Visual Studio Desktop C++ installe.
+Flutter refuse `flutter build windows` sur un hote Linux avant de lancer CMake;
+Wine ne suffit donc pas pour produire cet artefact depuis Linux.
+
+Depuis Windows, lancer d'abord:
+
+```bash
+./init_project.sh
+```
+
+Le script installe les prerequis via `winget` quand c'est disponible:
+
+- Git for Windows
+- Visual Studio 2022 Build Tools
+- workload `Microsoft.VisualStudio.Workload.NativeDesktop`
+- NSIS
+
+Puis construire:
 
 ```powershell
-flutter build windows
+./build.sh
 ```
 
 Artefact:
 
 ```text
 build/windows/x64/runner/Release/
+build/windows/dactykids-setup.exe
 ```
 
-Pour une diffusion publique, ajouter un installateur et une signature de code.
+Le workflow GitHub Actions produit aussi `dactykids-windows-installer`.
+Pour une diffusion publique, signer l'installateur.
 
 ## macOS
 
@@ -53,6 +72,23 @@ Artefact:
 ```text
 build/macos/Build/Products/Release/dactykids.app
 ```
+
+Lancer localement sans packaging signe:
+
+```bash
+open build/macos/Build/Products/Release/dactykids.app
+```
+
+Si Gatekeeper bloque l'app telechargee depuis GitHub Actions, utiliser:
+
+```bash
+xattr -dr com.apple.quarantine dactykids.app
+open dactykids.app
+```
+
+Sur certaines versions de macOS, un clic droit puis `Ouvrir` permet aussi de
+confirmer le lancement d'une app non signee. Ce mode convient aux tests locaux,
+pas a une distribution publique.
 
 Pour une diffusion publique, ajouter signature Apple et notarisation.
 

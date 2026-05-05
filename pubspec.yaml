@@ -23,4 +23,9 @@ flutter:
     - assets/content/layouts/
     - assets/content/lessons/
     - assets/content/wordlists/
+    - assets/images/game/
+    - assets/images/game/cars/
+    - assets/images/game/hands/
+    - assets/images/game/hands/high_contrast/
+    - assets/images/game/hands/red/
     - assets/sounds/

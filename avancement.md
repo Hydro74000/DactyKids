@@ -33,3 +33,19 @@
 - 2026-05-04: Budgets performance chargement contenu + moteur frappe.
 - 2026-05-04: Checklist release + protocole tests utilisateurs/accessibilite.
 - 2026-05-04: README actualise + CHANGELOG + procedure version/tag.
+- 2026-05-05: Debut refonte UI: assets IA jardin/ballons + animations.
+- 2026-05-05: Refonte UI etendue aux jeux taupes/vaisseau/course.
+- 2026-05-05: Animations liees progression/erreurs: taupes, jardin, voiture, fusee.
+- 2026-05-05: Zones jeu elargies + portefeuille etoiles persistant par profil.
+- 2026-05-05: Scripts init_project.sh et build.sh ajoutes.
+- 2026-05-05: Mini-jeux manuels: prompts arcade aleatoires hors lecons.
+- 2026-05-05: Aide mains/doigts ajoutee avec option activable.
+- 2026-05-05: Sprites doigts + voiture degats 0-10 prerendus.
+- 2026-05-05: Guide doigts rouge standard / noir contraste eleve.
+- 2026-05-05: Lettres retirees des images de mini-jeux.
+- 2026-05-05: Layout lecon reorganise: feedback haut, mains sous clavier.
+- 2026-05-05: Feedback lecon integre au header sans decalage du jeu.
+- 2026-05-05: Icone app generee et propagee Android/Linux/macOS/Windows.
+- 2026-05-05: Keystore release Android cree hors Git et APK signee.
+- 2026-05-05: Build Windows documente natif; prerequis Windows ajoutes init.
+- 2026-05-05: CI Windows NSIS ajoutee + lancement macOS non signe documente.

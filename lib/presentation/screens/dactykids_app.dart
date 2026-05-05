@@ -27,8 +27,10 @@ class _DactyKidsAppState extends State<DactyKidsApp> {
   ProgressOverview _progressOverview = const ProgressOverview(
     completedLessons: {},
     bestAccuracyByLesson: {},
+    bestStarValueByLesson: {},
     lastResultByLesson: {},
     keyStats: {},
+    starWallet: 0,
   );
   bool _isLoading = true;
 

@@ -10,6 +10,7 @@ Le workflow `.github/workflows/flutter.yml` lance:
 - budgets performance inclus dans `flutter test`
 - `flutter build linux`
 - `flutter build windows`
+- installateur Windows NSIS `dactykids-setup.exe`
 - `flutter build macos`
 - `flutter build apk --debug`
 - `flutter build apk --release`
@@ -19,7 +20,8 @@ Le workflow `.github/workflows/flutter.yml` lance:
 ## Artefacts de release
 
 - Linux: `build/linux/x64/release/bundle/dactykids`
-- Windows: `build/windows/x64/runner/Release/`
+- Windows portable: `build/windows/x64/runner/Release/`
+- Windows installateur: `build/windows/dactykids-setup.exe`
 - macOS: `build/macos/Build/Products/Release/dactykids.app`
 - Android debug: `build/app/outputs/flutter-apk/app-debug.apk`
 - Android release local: `build/app/outputs/flutter-apk/app-release.apk`
@@ -29,6 +31,7 @@ Le workflow `.github/workflows/flutter.yml` lance:
 
 - `dactykids-linux`
 - `dactykids-windows`
+- `dactykids-windows-installer`
 - `dactykids-macos`
 - `dactykids-android-apks`
 - `dactykids-android-aab`
@@ -46,5 +49,5 @@ La procedure de version est documentee dans `docs/versioning.md`.
 
 - Ajouter une signature Android release.
 - Ajouter signature/notarisation macOS.
-- Ajouter installateur Windows signe.
+- Signer l'installateur Windows.
 - Publier les artefacts signes sur une release GitHub taggee.
