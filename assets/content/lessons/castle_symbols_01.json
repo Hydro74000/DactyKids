@@ -1,0 +1,17 @@
+{
+  "id": "castle_symbols_01",
+  "title": "Ponctuation douce",
+  "world": "castle_phrases",
+  "newKeys": [",", "."],
+  "reviewKeys": ["A", "M", "I", "SPACE"],
+  "requiredAccuracy": 0.80,
+  "promptMode": "symbols",
+  "prompts": ["ami, ami.", "ami."],
+  "layoutVariants": {
+    "azerty_fr": {
+      "newKeys": [",", ":"],
+      "reviewKeys": ["Q", "M", "I", "SPACE"],
+      "prompts": ["ami, ami:", "ami:"]
+    }
+  }
+}

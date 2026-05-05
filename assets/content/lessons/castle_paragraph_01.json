@@ -1,0 +1,16 @@
+{
+  "id": "castle_paragraph_01",
+  "title": "Petit paragraphe",
+  "world": "castle_phrases",
+  "newKeys": [],
+  "reviewKeys": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE", ",", "."],
+  "requiredAccuracy": 0.78,
+  "promptMode": "paragraphs",
+  "prompts": ["Ami tape doucement. Le joli jardin grandit.", "La moto roule au soleil, puis elle reste calme."],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "B", "C", "D", "E", "F", "G", "H", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE", ",", ":"],
+      "prompts": ["Ami tape doucement, le joli jardin grandit:", "La moto roule au soleil, puis elle reste calme:"]
+    }
+  }
+}

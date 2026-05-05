@@ -1,0 +1,9 @@
+{
+  "id": "bottom_row_01",
+  "title": "V et N",
+  "world": "cave_bottom_row",
+  "newKeys": ["V", "N"],
+  "reviewKeys": ["F", "J", "SPACE"],
+  "requiredAccuracy": 0.86,
+  "prompts": ["V", "N", "F", "J", "V", "N", "SPACE", "V"]
+}

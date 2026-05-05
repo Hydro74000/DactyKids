@@ -1,0 +1,9 @@
+{
+  "id": "top_row_03",
+  "title": "T et Y",
+  "world": "forest_top_row",
+  "newKeys": ["T", "Y"],
+  "reviewKeys": ["R", "U", "E", "I", "F", "J", "SPACE"],
+  "requiredAccuracy": 0.88,
+  "prompts": ["T", "Y", "R", "U", "T", "Y", "SPACE", "E", "I"]
+}

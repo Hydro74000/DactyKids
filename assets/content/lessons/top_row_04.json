@@ -1,0 +1,16 @@
+{
+  "id": "top_row_04",
+  "title": "W et O",
+  "world": "forest_top_row",
+  "newKeys": ["W", "O"],
+  "reviewKeys": ["T", "Y", "R", "U", "E", "I", "F", "J", "SPACE"],
+  "requiredAccuracy": 0.88,
+  "prompts": ["W", "O", "T", "Y", "W", "O", "SPACE", "R", "U"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "title": "Z et O",
+      "newKeys": ["Z", "O"],
+      "prompts": ["Z", "O", "T", "Y", "Z", "O", "SPACE", "R", "U"]
+    }
+  }
+}

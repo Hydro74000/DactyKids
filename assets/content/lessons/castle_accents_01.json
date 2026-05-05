@@ -1,0 +1,18 @@
+{
+  "id": "castle_accents_01",
+  "title": "Accents doux",
+  "world": "castle_phrases",
+  "newKeys": ["É", "È", "À", "Ç", "Ù"],
+  "reviewKeys": ["A", "C", "E", "T", "U", "SPACE"],
+  "requiredAccuracy": 0.78,
+  "promptMode": "words",
+  "prompts": ["été", "à", "ça", "où"],
+  "layoutVariants": {
+    "qwerty_us": {
+      "title": "Accents simplifies",
+      "newKeys": [],
+      "reviewKeys": ["A", "C", "E", "T", "O", "U", "SPACE"],
+      "prompts": ["ete", "ca", "ou"]
+    }
+  }
+}

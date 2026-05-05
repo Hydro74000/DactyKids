@@ -1,0 +1,15 @@
+{
+  "id": "soft_test_01",
+  "title": "Test doux",
+  "world": "soft_test",
+  "newKeys": [],
+  "reviewKeys": ["A", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"],
+  "requiredAccuracy": 0.82,
+  "promptMode": "sentences",
+  "prompts": ["ami lit vite", "la lune est au sol"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"]
+    }
+  }
+}

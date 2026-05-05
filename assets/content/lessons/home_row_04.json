@@ -1,0 +1,16 @@
+{
+  "id": "home_row_04",
+  "title": "A et ;",
+  "world": "village_home_row",
+  "newKeys": ["A", ";"],
+  "reviewKeys": ["S", "D", "F", "J", "K", "L", "SPACE"],
+  "requiredAccuracy": 0.9,
+  "prompts": ["A", ";", "S", "L", "A", ";", "SPACE", "F"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "title": "Q et M",
+      "newKeys": ["Q", "M"],
+      "prompts": ["Q", "M", "S", "L", "Q", "M", "SPACE", "F"]
+    }
+  }
+}

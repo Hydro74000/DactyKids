@@ -1,0 +1,17 @@
+{
+  "id": "top_row_05",
+  "title": "Q et P",
+  "world": "forest_top_row",
+  "newKeys": ["Q", "P"],
+  "reviewKeys": ["W", "O", "T", "Y", "R", "U", "E", "I", "SPACE"],
+  "requiredAccuracy": 0.88,
+  "prompts": ["Q", "P", "W", "O", "Q", "P", "SPACE", "E", "I"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "title": "A et P",
+      "newKeys": ["A", "P"],
+      "reviewKeys": ["Z", "O", "T", "Y", "R", "U", "E", "I", "SPACE"],
+      "prompts": ["A", "P", "Z", "O", "A", "P", "SPACE", "E", "I"]
+    }
+  }
+}

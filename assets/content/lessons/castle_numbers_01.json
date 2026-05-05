@@ -1,0 +1,10 @@
+{
+  "id": "castle_numbers_01",
+  "title": "Chiffres 1 a 0",
+  "world": "castle_phrases",
+  "newKeys": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+  "reviewKeys": ["SPACE"],
+  "requiredAccuracy": 0.80,
+  "promptMode": "numbers",
+  "prompts": ["1 2 3", "4 5 6", "7 8 9 0"]
+}

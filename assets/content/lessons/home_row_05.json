@@ -1,0 +1,9 @@
+{
+  "id": "home_row_05",
+  "title": "G et H",
+  "world": "village_home_row",
+  "newKeys": ["G", "H"],
+  "reviewKeys": ["A", "S", "D", "F", "J", "K", "L", ";", "SPACE"],
+  "requiredAccuracy": 0.9,
+  "prompts": ["G", "H", "F", "J", "G", "H", "SPACE", "D", "K"]
+}

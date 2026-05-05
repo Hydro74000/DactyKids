@@ -1,0 +1,16 @@
+{
+  "id": "bottom_row_02",
+  "title": "B et M",
+  "world": "cave_bottom_row",
+  "newKeys": ["B", "M"],
+  "reviewKeys": ["V", "N", "F", "J", "SPACE"],
+  "requiredAccuracy": 0.86,
+  "prompts": ["B", "M", "V", "N", "B", "M", "SPACE", "F"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "title": "B et ,",
+      "newKeys": ["B", ","],
+      "prompts": ["B", ",", "V", "N", "B", ",", "SPACE", "F"]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "home_row_06",
+  "title": "Revision de la rangee de repos",
+  "world": "village_home_row",
+  "newKeys": [],
+  "reviewKeys": ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "SPACE"],
+  "requiredAccuracy": 0.9,
+  "prompts": ["F", "J", "D", "K", "S", "L", "A", ";", "G", "H", "SPACE", "F", "J"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "S", "D", "F", "G", "H", "J", "K", "L", "M", "SPACE"],
+      "prompts": ["F", "J", "D", "K", "S", "L", "Q", "M", "G", "H", "SPACE", "F", "J"]
+    }
+  }
+}

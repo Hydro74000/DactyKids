@@ -1,0 +1,9 @@
+{
+  "id": "home_row_02",
+  "title": "D et K",
+  "world": "village_home_row",
+  "newKeys": ["D", "K"],
+  "reviewKeys": ["F", "J", "SPACE"],
+  "requiredAccuracy": 0.9,
+  "prompts": ["D", "K", "F", "J", "D", "K", "SPACE", "D"]
+}

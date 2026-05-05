@@ -1,0 +1,35 @@
+# Avancement
+
+- 2026-05-04: MVP Flutter cree, tests OK, builds Linux/APK OK.
+- 2026-05-04: Suite en cours: UX enfant, progression, badges, parent, accessibilite.
+- 2026-05-04: Profil local, recompenses, CSV parent, pause enrichie: OK.
+- 2026-05-04: Tests contraste + guide distribution ajoutes.
+- 2026-05-04: Bug scaling typo basse vision corrige; analyse/tests/builds OK.
+- 2026-05-04: Acces visibles Profil / Avatar / Recompenses sur accueil.
+- 2026-05-04: Plan mis a jour: profils multiples separes.
+- 2026-05-04: Debut Alpha: 5 lecons rangee superieure ajoutees.
+- 2026-05-04: Mini-jeux taupes/jardin + stats par touche par profil.
+- 2026-05-04: Liste lecons scrollable, centrage lecon courante, acces Mini-jeux.
+- 2026-05-04: Mini-jeux dedies debloques selon progression; lancement implicite conserve.
+- 2026-05-04: Debut Beta: rangee inferieure, pratique mots, adaptation douce.
+- 2026-05-04: Phrases simples + test doux + WPM indicatif.
+- 2026-05-04: Reglages son/timer/objectif hebdo + recompenses etendues.
+- 2026-05-04: Monde 4 amorce: majuscules, chiffres, symboles + CSV touches.
+- 2026-05-04: Paragraphes courts + resume parent par monde + guide enseignant.
+- 2026-05-04: 5 mini-jeux disponibles + sons doux systeme.
+- 2026-05-04: CI Flutter ajoutee + tests widget panneau parent/mini-jeux.
+- 2026-05-04: Syllabes simples + tests integrite contenus/layouts.
+- 2026-05-04: Cibles tactiles renforcees + tests accessibilite tailles.
+- 2026-05-04: Audio local complet correct/erreur/succes + test assets.
+- 2026-05-04: Test scaling texte 200 % sur accueil/reglages/parent.
+- 2026-05-04: Test navigation clavier accueil/appbar.
+- 2026-05-04: Accents francais progressifs AZERTY + variante QWERTY simplifiee.
+- 2026-05-04: Sauvegarde/restauration JSON profils + progression.
+- 2026-05-04: Suppression locale profil + progression associee.
+- 2026-05-04: Configuration Android release + doc signature + CI release.
+- 2026-05-04: Mode visuel niveaux de gris + test anti-dependance couleur.
+- 2026-05-04: CI Windows/macOS ajoutee + docs packaging natives.
+- 2026-05-04: Upload artefacts CI Linux/Windows/macOS/Android + AAB.
+- 2026-05-04: Budgets performance chargement contenu + moteur frappe.
+- 2026-05-04: Checklist release + protocole tests utilisateurs/accessibilite.
+- 2026-05-04: README actualise + CHANGELOG + procedure version/tag.

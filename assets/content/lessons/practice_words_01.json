@@ -1,0 +1,15 @@
+{
+  "id": "practice_words_01",
+  "title": "Mots tres courts",
+  "world": "word_garden",
+  "newKeys": [],
+  "reviewKeys": ["A", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"],
+  "requiredAccuracy": 0.85,
+  "promptMode": "words",
+  "prompts": ["ami", "lune", "sol", "lac", "moto"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"]
+    }
+  }
+}

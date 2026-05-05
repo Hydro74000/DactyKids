@@ -1,0 +1,15 @@
+{
+  "id": "practice_syllables_01",
+  "title": "Syllabes simples",
+  "world": "word_garden",
+  "newKeys": [],
+  "reviewKeys": ["A", "E", "F", "I", "J", "L", "M", "N", "O", "S", "U", "SPACE"],
+  "requiredAccuracy": 0.86,
+  "promptMode": "syllables",
+  "prompts": ["la", "mi", "lu", "so", "ne"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "E", "F", "I", "J", "L", "M", "N", "O", "S", "U", "SPACE"]
+    }
+  }
+}

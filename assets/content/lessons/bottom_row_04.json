@@ -1,0 +1,17 @@
+{
+  "id": "bottom_row_04",
+  "title": "X et .",
+  "world": "cave_bottom_row",
+  "newKeys": ["X", "."],
+  "reviewKeys": ["C", ",", "B", "M", "V", "N", "SPACE"],
+  "requiredAccuracy": 0.86,
+  "prompts": ["X", ".", "C", ",", "X", ".", "SPACE", "V"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "title": "X et :",
+      "newKeys": ["X", ":"],
+      "reviewKeys": ["C", ";", "B", ",", "V", "N", "SPACE"],
+      "prompts": ["X", ":", "C", ";", "X", ":", "SPACE", "V"]
+    }
+  }
+}

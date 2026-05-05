@@ -1,0 +1,16 @@
+{
+  "id": "castle_shift_01",
+  "title": "Majuscules douces",
+  "world": "castle_phrases",
+  "newKeys": ["SHIFT+A", "SHIFT+M"],
+  "reviewKeys": ["A", "M", "I", "L", "SPACE"],
+  "requiredAccuracy": 0.82,
+  "prompts": ["SHIFT+A", "A", "SHIFT+M", "M", "SPACE", "I", "L"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "newKeys": ["SHIFT+Q", "SHIFT+M"],
+      "reviewKeys": ["Q", "M", "I", "L", "SPACE"],
+      "prompts": ["SHIFT+Q", "Q", "SHIFT+M", "M", "SPACE", "I", "L"]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "home_row_01",
+  "title": "F, J et espace",
+  "world": "village_home_row",
+  "newKeys": ["F", "J", "SPACE"],
+  "reviewKeys": [],
+  "requiredAccuracy": 0.9,
+  "prompts": ["F", "J", "SPACE", "F", "J", "F", "SPACE", "J"]
+}

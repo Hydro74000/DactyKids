@@ -1,0 +1,15 @@
+{
+  "id": "practice_sentences_01",
+  "title": "Phrases simples",
+  "world": "word_garden",
+  "newKeys": [],
+  "reviewKeys": ["A", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"],
+  "requiredAccuracy": 0.84,
+  "promptMode": "sentences",
+  "prompts": ["ami lit", "lune au sol", "moto sur la route"],
+  "layoutVariants": {
+    "azerty_fr": {
+      "reviewKeys": ["Q", "C", "D", "E", "F", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "SPACE"]
+    }
+  }
+}
