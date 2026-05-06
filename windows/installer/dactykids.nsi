@@ -2,16 +2,15 @@
 !define APP_EXE "dactykids.exe"
 !define COMPANY_NAME "dev.hydromel"
 !define INSTALL_DIR "$LOCALAPPDATA\DactyKids"
-!define PROJECT_DIR "${__FILEDIR__}\..\.."
 
 Name "${APP_NAME}"
-OutFile "${PROJECT_DIR}\build\windows\dactykids-setup.exe"
+OutFile "..\..\build\windows\dactykids-setup.exe"
 InstallDir "${INSTALL_DIR}"
 RequestExecutionLevel user
 Unicode true
 
-Icon "${PROJECT_DIR}\windows\runner\resources\app_icon.ico"
-UninstallIcon "${PROJECT_DIR}\windows\runner\resources\app_icon.ico"
+Icon "..\runner\resources\app_icon.ico"
+UninstallIcon "..\runner\resources\app_icon.ico"
 
 VIProductVersion "0.1.0.1"
 VIAddVersionKey "ProductName" "${APP_NAME}"
@@ -29,7 +28,7 @@ UninstPage instfiles
 Section "Install"
   RMDir /r "$INSTDIR"
   SetOutPath "$INSTDIR"
-  File /r "${PROJECT_DIR}\build\windows\x64\runner\Release\*.*"
+  File /r "..\..\build\windows\x64\runner\Release\*.*"
 
   CreateDirectory "$SMPROGRAMS\${APP_NAME}"
   CreateShortcut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0

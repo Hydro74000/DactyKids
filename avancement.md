@@ -52,3 +52,4 @@
 - 2026-05-05: README complet reorganise utilisateur puis technique.
 - 2026-05-05: Release v1.0.0 preparee: version, changelog, checklist.
 - 2026-05-05: CI NSIS durcie avec chemin makensis explicite.
+- 2026-05-06: Script NSIS corrige: chemins relatifs icone/build.
