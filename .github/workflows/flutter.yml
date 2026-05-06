@@ -59,9 +59,22 @@ jobs:
       - name: Build NSIS installer
         shell: pwsh
         run: |
-          $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
-          if (!(Test-Path $makensis)) {
-            $makensis = "${env:ProgramFiles}\NSIS\makensis.exe"
+          $candidates = @(
+            "${env:ProgramData}\chocolatey\bin\makensis.exe",
+            "${env:ProgramFiles(x86)}\NSIS\Bin\makensis.exe",
+            "${env:ProgramFiles}\NSIS\Bin\makensis.exe",
+            "${env:ProgramFiles(x86)}\NSIS\makensis.exe",
+            "${env:ProgramFiles}\NSIS\makensis.exe"
+          )
+          $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (!$makensis) {
+            $makensisCommand = Get-Command makensis -ErrorAction SilentlyContinue
+            if ($makensisCommand) {
+              $makensis = $makensisCommand.Source
+            }
+          }
+          if (!$makensis) {
+            throw "makensis.exe introuvable apres installation NSIS"
           }
           & $makensis windows/installer/dactykids.nsi
       - uses: actions/upload-artifact@v4
