@@ -10,6 +10,8 @@ Le projet vise une experience douce et encourageante: des lecons courtes, un
 clavier visuel, des mini-jeux animes, des recompenses, et des outils simples
 pour les parents ou enseignants.
 
+Fait pour mes enfants, partagé pour les autres :)
+
 ## Fonctionnalites
 
 - Parcours progressif: rangee de repos, rangee superieure, rangee inferieure,
